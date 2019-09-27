@@ -1,0 +1,139 @@
+#!/bin/bash
+# - Email extraction tool for extracting mail from pcaps
+# - Author: mcb2Eexe
+# - Written on Ubuntu 18.04
+# - Version: 1.0
+# - Last modified: 27 Sep 19
+
+
+function dependancies(){
+	
+	echo -e "Checking dependancies..."
+	while true; do
+		if [ ! -x "$(command -v tcpflow)" ]; then
+			echo -e "tcpflow not found, install now? [y]Yes [n]No:"
+			read opt
+			if [ $opt = "y" ]; then
+				sudo apt install tcpflow
+			elif [ $opt = "n" ]; then
+				echo "tcpflow needed to continue, script terminating..."
+				exit 0
+			else
+				echo "Unknown input, check and try again..."
+				continue
+			fi
+		elif [ ! -x "$(command -v munpack)" ]; then
+			echo -e "munpack not found, install now? [y]Yes [n]No"
+			read opt
+			if [ $opt = "y" ]; then
+				sudo apt install mpack
+			elif [ $opt = "n" ]; then
+				echo "munpack needed to continue, script terminating..."
+				exit 0
+			else
+				echo "Unknown input, check and try again..."
+				sleep 1
+				continue
+			fi
+		else
+			break
+		fi
+	done
+	echo -e "Dependancy check complete!"
+	
+}
+
+
+function pcapExtract(){
+	
+	if [[ "$file" != */* ]]; then
+		echo "YES"
+		pcap="$file"
+		path="."
+	else
+		pcap=`basename "$file"`
+		path=`dirname "$file"`
+	fi
+	outputDir=$(echo "$pcap" | cut -f 1 -d '.')
+	if [ ! -d "$path/$outputDir" ]; then
+		mkdir -p "$path/$outputDir"
+	else
+		echo "poop"
+		#rm -rf "$path/$outputDir/"
+	fi
+	echo -e "Parsing $pcap"
+	echo -e "Extracting emails..."
+	tcpflow -o "$path/$outputDir" -r "$path/$pcap"
+	echo -e "Extracting attachments..."
+	find "$path/$outputDir/" -type f | while read file; do
+		i=1
+		grep -im 1 "From:" "$file" > /dev/null 2>&1
+		if [ $? -eq 0 ] 
+		then
+			[ -d "$path/$outputDir/email" ] || mkdir -p "$path/$outputDir/email"
+			mv "$file" "$path/$outputDir/email/$i.eml"
+			munpack -C "$path/$outputDir/email" "$i.eml" > /dev/null 2>&1
+			let i++
+		fi
+	done
+	
+}
+
+
+function usage(){
+	
+	echo -e "Usage: emailExtract\n\n[ -f <PCAP-filename> ] extract emails and attachments from a single pcap\n[ -d <DIR-path> ] extract emails and attachments from multiple pcaps within a directory\n"
+	exit 0		
+	
+}
+
+
+#Start
+
+
+(( $# )) || usage
+
+while getopts ":f:d:" opt; do
+    case $opt in
+    
+    f)	file=$OPTARG
+		if [ ! -f "$file" ]; then
+			echo -e "\nError! file not found...\n"
+			usage
+		elif [[ "$file" != *.pcap ]]; then
+			echo -e "\nError! PCAP expected...\n"
+			usage
+		else
+			dependancies
+			pcapExtract
+		fi
+		
+		echo -e "Extraction complete!"
+		exit 0
+	;;
+    
+    d)	pcapdir=$OPTARG
+		if [ ! -d "$pcapdir" ]; then
+			echo -e "\nError! Directory expected...\n"
+			usage
+		fi
+		tmp=$(find "$pcapdir" -type f -name "*.pcap" | grep '.*')
+		if [ $? -eq 1  ] 
+		then
+			echo -e "\nNo PCAPs found in directory...\n"
+			usage
+		else
+			dependancies
+			find "$pcapdir" -type f -name "*.pcap" | while read file; do
+				pcapExtract	
+			done
+		fi
+		echo "Extraction complete!"
+	;;
+			
+	*)	echo -e "\nInvalid option: $OPTARG\n" 
+		usage 
+	;;
+	
+	esac
+done
