@@ -68,9 +68,9 @@ function pcapExtract(){
 		grep -im 1 "From:" "$file" > /dev/null 2>&1
 		if [ $? -eq 0 ] 
 		then
-			[ -d "$path/$outputDir/email" ] || mkdir -p "$path/$outputDir/email"
-			mv "$file" "$path/$outputDir/email/$i.eml"
-			munpack -C "$path/$outputDir/email" "$i.eml" > /dev/null 2>&1
+			[ -d "$path/$outputDir/email$i" ] || mkdir -p "$path/$outputDir/email$i"
+			mv "$file" "$path/$outputDir/email$i/$i.eml"
+			munpack -C "$path/$outputDir/email$i" "$i.eml" > /dev/null 2>&1
 			let i++
 		fi
 	done
