@@ -47,7 +47,6 @@ function dependancies(){
 function pcapExtract(){
 	
 	if [[ "$file" != */* ]]; then
-		echo "YES"
 		pcap="$file"
 		path="."
 	else
@@ -58,8 +57,7 @@ function pcapExtract(){
 	if [ ! -d "$path/$outputDir" ]; then
 		mkdir -p "$path/$outputDir"
 	else
-		echo "poop"
-		#rm -rf "$path/$outputDir/"
+		rm -rf "$path/$outputDir/"
 	fi
 	echo -e "Parsing $pcap"
 	echo -e "Extracting emails..."
