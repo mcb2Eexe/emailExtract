@@ -63,8 +63,8 @@ function pcapExtract(){
 	echo -e "Extracting emails..."
 	tcpflow -o "$path/$outputDir" -r "$path/$pcap"
 	echo -e "Extracting attachments..."
+        i=1
 	find "$path/$outputDir/" -type f | while read file; do
-		i=1
 		grep -im 1 "From:" "$file" > /dev/null 2>&1
 		if [ $? -eq 0 ] 
 		then
