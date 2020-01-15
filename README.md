@@ -1,5 +1,5 @@
 # emailExtract
-Simple script to extract emails and their attachments from PCAP files, written in bash for Linux analysis machines.
+Simple script to extract emails and their attachments from PCAP files, written in bash for Linux analysis machines (tested on Ubuntu 18.04).
 
 Written to automate the extraction of emails and attachments from trigger PCAPs containing possible malicious emails.
 
