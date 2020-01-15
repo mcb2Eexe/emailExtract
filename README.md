@@ -1,7 +1,7 @@
 # emailExtract
 Simple script to extract emails and their attachments from PCAP files, written in bash for Linux analysis machines.
 
-Written to automate the extraction of emails and attachments form trigger PCAPs containing possible malicious emails.
+Written to automate the extraction of emails and attachments from trigger PCAPs containing possible malicious emails.
 
 Uses tcpflow to extract emails and munpack to extract attachments.
 
