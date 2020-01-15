@@ -6,8 +6,8 @@
 # - Last modified: 28 Sep 19
 
 
+# Checks for dependancies and prompts to install if not found
 function dependancies(){
-	
 	echo -e "Checking dependancies..."
 	while true; do
 		if [ ! -x "$(command -v tcpflow)" ]; then
@@ -44,8 +44,8 @@ function dependancies(){
 }
 
 
+# Extracts emails and attachments from pcap
 function pcapExtract(){
-	
 	if [[ "$file" != */* ]]; then
 		pcap="$file"
 		path="."
