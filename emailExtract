@@ -15,6 +15,7 @@ function dependancies(){
 			read opt
 			if [ $opt = "y" ]; then
 				sudo apt install tcpflow
+				error_check $?
 			elif [ $opt = "n" ]; then
 				echo "tcpflow needed to continue, script terminating..."
 				exit 0
@@ -27,6 +28,7 @@ function dependancies(){
 			read opt
 			if [ $opt = "y" ]; then
 				sudo apt install mpack
+				error_check $?
 			elif [ $opt = "n" ]; then
 				echo "munpack needed to continue, script terminating..."
 				exit 0
@@ -83,6 +85,15 @@ function usage(){
 	echo -e "Usage: emailExtract\n\n[ -f <PCAP-filename> ] extract emails and attachments from a single pcap\n[ -d <DIR-path> ] extract emails and attachments from multiple pcaps within a directory\n"
 	exit 0		
 	
+}
+
+
+function error_check(){
+	err=$1
+	if [ ! $err -eq 0 ]; then
+		echo -e "\nError! Check and try again...\n"
+		exit 0
+	fi
 }
 
 
